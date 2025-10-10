@@ -1,0 +1,27 @@
+/* Basic styling to improve look and spacing */
+body {
+  background: #f8f9fa;
+  color: #343a40;
+}
+
+.navbar-brand { font-weight: 600; }
+
+.card { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+h2, h3 { color: #212529; }
+
+.table th { background: #e9ecef; }
+
+/* Form inputs */
+.form-control:focus { box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.15); }
+
+/* Button tweaks */
+.btn-primary { background-color: #0d6efd; border-color: #0d6efd; }
+.btn-outline-danger { border-color: #dc3545; color: #dc3545; }
+
+.container { max-width: 1000px; }
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+  .container { padding: 0 12px; }
+}
