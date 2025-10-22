@@ -21,25 +21,33 @@
   <h3 class="mt-4">Thêm sản phẩm mới</h3>
   <form method="POST" class="mb-4">
   <div class="row">
-    <div class="col-md-3"><input type="text" name="name" placeholder="Tên" class="form-control" required></div>
-    <div class="col-md-3"><input type="number" name="price" placeholder="Giá" class="form-control" required></div>
-    <div class="col-md-3">
+    <div class="col-md-2"><input type="text" name="name" placeholder="Tên" class="form-control" required></div>
+    <div class="col-md-2"><input type="number" name="price" placeholder="Giá" class="form-control" required></div>
+    <div class="col-md-2"><input type="number" name="sold" placeholder="Sold" class="form-control" value="0"></div>
+    <div class="col-md-2">
       <select name="size" class="form-control">
         <option>S</option><option>M</option><option>L</option><option>XL</option>
       </select>
     </div>
-    <div class="col-md-3"><input type="text" name="description" placeholder="Mô tả" class="form-control"></div>
+    <div class="col-md-2"><input type="text" name="description" placeholder="Mô tả" class="form-control"></div>
+    <div class="col-md-2"><button type="submit" class="btn btn-success w-100">Thêm</button></div>
   </div>
-  <button type="submit" class="btn btn-success mt-2">Thêm</button>
 </form>
 
 <table class="table table-striped">
   <thead>
-    <tr><th>Tên</th><th>Giá</th><th>Kích cỡ</th><th>Mô tả</th></tr>
+    <tr><th>Tên</th><th>Giá</th><th>Sold</th><th>Doanh Số</th><th>Kích cỡ</th><th>Mô tả</th></tr>
   </thead>
   <tbody>
     <% products.forEach(product => { %>
-      <tr><td><%= product.name %></td><td><%= product.price %></td><td><%= product.size %></td><td><%= product.description %></td></tr>
+      <tr>
+        <td><%= product.name %></td>
+        <td><%= product.price %></td>
+        <td><%= product.sold %></td>
+        <td><strong><%= (product.revenue || 0).toLocaleString('vi-VN') %> ₫</strong></td>
+        <td><%= product.size %></td>
+        <td><%= product.description %></td>
+      </tr>
     <% }) %>
   </tbody>
   </table>

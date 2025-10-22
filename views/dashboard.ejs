@@ -5,18 +5,229 @@
   <title>Dashboard</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="container mt-5">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="/dashboard">Dashboard</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav">
-        <li class="nav-item"><a class="nav-link" href="/dashboard/users">Quản lý User</a></li>
-        <li class="nav-item"><a class="nav-link" href="/dashboard/products">Quản lý Quần Áo</a></li>
-      </ul>
+<body class="d-flex flex-column min-vh-100">
+  <header class="navbar-header">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/dashboard">Dashboard</a>
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/dashboard/users">Quản lý User</a></li>
+            <li class="nav-item"><a class="nav-link" href="/dashboard/products">Quản lý Quần Áo</a></li>
+          </ul>
+        </div>
+        <a href="/logout" class="btn btn-outline-danger">Logout</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-4 flex-grow-1">
+    <h2 class="text-center mb-4">Chào mừng đến Dashboard</h2>
+
+    <div class="row">
+      <div class="col-12 col-lg-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Top 5 sản phẩm theo Doanh Số</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="revenueChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Top 5 sản phẩm bán chạy</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="soldChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
     </div>
-    <a href="/logout" class="btn btn-outline-danger">Logout</a>
-  </nav>
-  <h2 class="text-center mt-4">Chào mừng đến Dashboard</h2>
+
+    <div class="row">
+      <div class="col-12 col-lg-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Tỷ lệ Doanh Số theo Sản Phẩm</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="pieChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="card-title mb-0">Xu hướng Doanh Số Top 5 Sản Phẩm</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="lineChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light text-center py-3 mt-auto">
+    <div class="container">
+      <small>&copy; <%= new Date().getFullYear() %> VietBeo Clothing Management System</small>
+    </div>
+  </footer>
+
+  <script>
+    // Data for revenue chart
+    const topByRevenue = <%- JSON.stringify(typeof topByRevenue !== 'undefined' ? topByRevenue : []) %>;
+    const revenueLabels = (topByRevenue || []).map(p => p.name);
+    const revenueData = (topByRevenue || []).map(p => p.revenue || 0);
+
+    // Data for sold chart
+    const topBySold = <%- JSON.stringify(typeof topBySold !== 'undefined' ? topBySold : []) %>;
+    const soldLabels = (topBySold || []).map(p => p.name);
+    const soldData = (topBySold || []).map(p => p.sold || 0);
+
+    // Revenue Chart
+    const revenueCtx = document.getElementById('revenueChart');
+    if (revenueCtx) {
+      new Chart(revenueCtx, {
+        type: 'bar',
+        data: {
+          labels: revenueLabels,
+          datasets: [{
+            label: 'Doanh Số (₫)',
+            data: revenueData,
+            backgroundColor: 'rgba(76, 175, 80, 0.7)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { 
+              enabled: true,
+              callbacks: {
+                label: function(context) {
+                  return 'Doanh Số: ' + context.parsed.y.toLocaleString('vi-VN') + ' ₫';
+                }
+              }
+            }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // Sold Chart
+    const soldCtx = document.getElementById('soldChart');
+    if (soldCtx) {
+      new Chart(soldCtx, {
+        type: 'bar',
+        data: {
+          labels: soldLabels,
+          datasets: [{
+            label: 'Số lượng đã bán',
+            data: soldData,
+            backgroundColor: 'rgba(13, 110, 253, 0.7)'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // Pie Chart - Tỷ lệ Doanh Số
+    const pieCtx = document.getElementById('pieChart');
+    if (pieCtx && revenueLabels.length > 0) {
+      const pieColors = [
+        'rgba(255, 99, 132, 0.7)',
+        'rgba(54, 162, 235, 0.7)',
+        'rgba(255, 206, 86, 0.7)',
+        'rgba(75, 192, 192, 0.7)',
+        'rgba(153, 102, 255, 0.7)'
+      ];
+      new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: revenueLabels,
+          datasets: [{
+            data: revenueData,
+            backgroundColor: pieColors,
+            borderColor: '#fff',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = ((context.parsed / total) * 100).toFixed(1);
+                  return context.label + ': ' + context.parsed.toLocaleString('vi-VN') + ' ₫ (' + percentage + '%)';
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Line Chart - Xu hướng Doanh Số
+    const lineCtx = document.getElementById('lineChart');
+    if (lineCtx && revenueLabels.length > 0) {
+      new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: revenueLabels,
+          datasets: [{
+            label: 'Doanh Số (₫)',
+            data: revenueData,
+            borderColor: 'rgba(76, 175, 80, 1)',
+            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5,
+            pointBackgroundColor: 'rgba(76, 175, 80, 1)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Doanh Số: ' + context.parsed.y.toLocaleString('vi-VN') + ' ₫';
+                }
+              }
+            }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>

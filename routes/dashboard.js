@@ -18,8 +18,16 @@ const authMiddleware = (req, res, next) => {
 };
 
 // Dashboard chính
-router.get('/', authMiddleware, (req, res) => {
-  res.render('dashboard');
+router.get('/', authMiddleware, async (req, res) => {
+  try {
+    // Lấy top 5 sản phẩm theo doanh số (revenue)
+    const topByRevenue = await Product.find({}).sort({ revenue: -1 }).limit(5).lean();
+    // Lấy top 5 sản phẩm theo số lượng bán
+    const topBySold = await Product.find({}).sort({ sold: -1 }).limit(5).lean();
+    res.render('dashboard', { topByRevenue, topBySold });
+  } catch (err) {
+    res.status(500).send('Server error: ' + err.message);
+  }
 });
 
 // Quản lý user
@@ -36,11 +44,23 @@ router.get('/products', authMiddleware, async (req, res) => {
   res.render('product', { products });
 });
 
-// Thêm sản phẩm (example)
+// Thêm sản phẩm
 router.post('/products', authMiddleware, async (req, res) => {
-  const { name, price, size, description } = req.body;
+  const { name, price, size, description, sold } = req.body;
   try {
-    const product = new Product({ name, price, size, description, createdBy: req.user.id });
+    const soldCount = parseInt(sold) || 0;
+    const priceNum = parseFloat(price) || 0;
+    const revenue = priceNum * soldCount;
+    
+    const product = new Product({ 
+      name, 
+      price: priceNum, 
+      size, 
+      description, 
+      sold: soldCount,
+      revenue: revenue,
+      createdBy: req.user.id 
+    });
     await product.save();
     res.redirect('/dashboard/products');
   } catch (err) {

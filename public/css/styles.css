@@ -1,7 +1,49 @@
 /* Basic styling to improve look and spacing */
 body {
-  background: #f8f9fa;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   color: #343a40;
+  min-height: 100vh;
+}
+
+/* Beautiful header with gradient */
+.navbar-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.navbar-header .navbar {
+  background: transparent !important;
+  padding: 1rem 0;
+}
+
+.navbar-header .navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: white !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-header .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  margin: 0 8px;
+}
+
+.navbar-header .nav-link:hover {
+  color: white !important;
+}
+
+.navbar-header .btn-outline-danger {
+  border-color: white;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.navbar-header .btn-outline-danger:hover {
+  background-color: white;
+  color: #667eea;
 }
 
 .navbar-brand { font-weight: 600; }
@@ -25,3 +67,12 @@ h2, h3 { color: #212529; }
 @media (max-width: 576px) {
   .container { padding: 0 12px; }
 }
+
+/* Dashboard chart card */
+.card .card-body canvas { max-width: 100%; height: auto; }
+
+/* Footer tweaks */
+footer { border-top: 1px solid rgba(0,0,0,0.05); }
+
+/* Make body fill height so footer sticks to bottom */
+html, body { height: 100%; }
